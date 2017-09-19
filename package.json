@@ -1,0 +1,42 @@
+{
+  "private": true,
+  "name": "chess-tools",
+  "version": "1.0.0",
+  "description": "A collection of tools / libraries for programming chess applications.",
+  "scripts": {
+    "main": "index.js",
+    "test": "mocha test/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnfontaine/chess-tools.git"
+  },
+  "keywords": [
+    "chess",
+    "polyglot",
+    "opening book",
+    "pgn",
+    "chess openings",
+    "fen"
+  ],
+  "author": [
+    {
+      "name": "John Fontaine",
+      "email": "jsfontaine@gmail.com",
+      "url": "https://www.johnfontaine.com/"
+    }
+  ],
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/johnfontaine/chess-tools/issues"
+  },
+  "homepage": "https://github.com/johnfontaine/chess-tools#readme",
+  "devDependencies": {
+    "mocha": "^3.5.3"
+  },
+  "dependencies": {
+    "chess.js": "^0.10.2",
+    "debug": "^3.0.1",
+    "int64-buffer": "^0.1.9"
+  }
+}

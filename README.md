@@ -13,3 +13,4 @@ CTG Format
 Forum post http://rybkaforum.net/cgi-bin/rybkaforum/topic_show.pl?tid=2319
 CTGReader by https://github.com/sshivaji
 https://github.com/sshivaji/ctgreader/
+Sample file http://americanfoot.free.fr/echecs/ctg-thematique.htm
