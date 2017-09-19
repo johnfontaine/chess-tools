@@ -23,13 +23,6 @@ describe('Polyglot', function() {
   before(function(done) {
 
     polyglot.on("loaded", () => {
-      // console.log("loaded ok");
-      // for (let name of Object.keys(test_data)) {
-      //   let r = polyglot.generate_hash(test_data[name].FEN);
-      //   console.log(name, test_data[name].FEN, r == test_data[name].key ?  "OK" : "INVALID",test_data[name].key,r);
-      //   let r1 = polyglot.findAll(test_data[name].FEN);
-      //   console.log(r1);
-      // }
       done();
     });
     polyglot.load_book(fs.createReadStream(process.cwd() + "/test/sample-data/gm2001.bin"));

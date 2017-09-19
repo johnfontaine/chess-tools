@@ -2,6 +2,7 @@
 var debug = require('debug')('CTG')
 //Based on notes  from http://rybkaforum.net/cgi-bin/rybkaforum/topic_show.pl?tid=2319
 const Transform = require('stream').Transform;
+const EventEmitter = require('events');
 var Chess = require('chess.js').Chess;
 var chess = new Chess();
 var chess_black = new Chess();
@@ -231,6 +232,9 @@ const ep = 0x20;
 const ca = 0x40;
 const files = "abcdefgh".split("");
 const ranks = "12345678".split("");
+function key_from_fen(fen) {
+  return fen.split(" ").slice(0,3).join(" ");
+}
 function pad_number_string(str, expected_length) {
   if (str.length < expected_length) {
     let pad = expected_length - str.length;
@@ -255,22 +259,8 @@ function to_hex_string(number) {
   return "0x" + pad_number_string(number.toString(16), 2);
 }
 
-class CTGPage {
-  static fromBuffer() {
-
-  }
-  constructor() {
-
-  }
-}
-
-
 class CTGEntry {
-    /**
-   * Represents a CTG Position Entry.
-   * @constructor
-   * @param {string} to_move optional the position to move. valid values are w - white, b - black, default is white. 
-   */
+
   constructor(to_move) {
     if (!to_move) {
       this.to_move = 'w';
@@ -311,10 +301,10 @@ class CTGEntry {
     if (this.to_move === 'b') {
       let fen_items = fen.split(" ");
       fen_items[1] = 'b';
-      fen_items[5] = 2; //must be move 2;
       fen = fen_items.join(" ");
     }
     this.fen = fen;
+    this.key = key_from_fen(fen);
   }
   toString() {
     return JSON.stringify(this, null, '');
@@ -568,9 +558,42 @@ class CTGStream extends Transform {
     this.push(entry_black);
   }
 }
-class CTG {
+class CTG  extends EventEmitter {
   constructor() {
-    this.ctgStream = new CTGStream();
+    super();
+    this.loaded = false;
+    this.stream = new CTGStream();
+    this.entries = {
+      b : {},
+      w : {},
+    }
+  }
+  load_book(stream) {
+    this.stream.on( "data", (entry)=>{
+      if (this.entries[entry.to_move][entry.key]) {
+        console.log("possible duplicate for entry")
+        console.log("New Entry:", JSON.stringify(entry, null, ' '));
+        console.log("OLD ENTRY:", JSON.stringify(this.entries[entry.to_move][entry.key]));
+      }
+      this.entries[entry.to_move][entry.key] = entry;
+    });
+    this.stream.on('finish', ()=>{
+        this.loaded= true;
+        this.emit("loaded");
+    });
+    this.stream.on('error', (error)=>{
+      console.log("error", error);
+      this.emit("error", error);
+    })
+    stream.pipe(this.stream);
+  }
+  findAll(fen) {
+    if (!this.loaded) {
+      throw new Error("No book is loaded")
+    }
+    let to_move = fen.split(" ")[1];
+    let key = key_from_fen(fen);
+    return this.entries[to_move][key];
   }
 }
 module.exports=CTG;

@@ -384,27 +384,27 @@ class Polyglot extends EventEmitter {
     super();
     this.loaded = false;
     this.entries = [];
-    this.polyglotStream = new PolyglotStream();
+    this.stream = new PolyglotStream();
   }
   load_book(stream) {
     this.entries = [];
     this.loaded = false;
 
-    this.polyglotStream.on( "data", (entry)=>{
+    this.stream.on( "data", (entry)=>{
       if (!this.entries[entry.key]) {
         this.entries[entry.key] = [];
       }
       this.entries[entry.key].push(entry);
     });
-    this.polyglotStream.on('finish', ()=>{
+    this.stream.on('finish', ()=>{
         this.loaded= true;
         this.emit("loaded");
     });
-    this.polyglotStream.on('error', (error)=>{
+    this.stream.on('error', (error)=>{
       console.log("error", error);
       this.emit("error", error);
     })
-    stream.pipe(this.polyglotStream);
+    stream.pipe(this.stream);
   }
   findAll(fen) {
     if (!this.loaded) {
