@@ -51,8 +51,13 @@ Allows for openings to be classified based on a pgn string.
     eco.load_default(); //loads a default opening database (see sources below)
     //alternatively eco.load(stream) for a stream of a standard pgn file of openings.
 ```
+## Future Plans / Roadmap
+
+Eventually I want to expand to support various tablebase and game databases. I also want to simplify the interface to send these datasets to chess engines via UCI.  
 
 ## References
+Note: Sample Files are believed to be in the public domain or licensed under GPL.  Sources are provided below.
+
 * Chess Programming Wiki
   https://chessprogramming.wikispaces.com/
 
