@@ -14,10 +14,10 @@ The goal of of this package is to provide useful functionality for those seeking
 ## Organization
 
 * ChessTools
-.* OpeningBooks
-.. Allows for reading opening books in various formats with a generic interface.
+ * OpeningBooks
+   Allows for reading opening books in various formats with a generic interface.
 
-..* General Interface
+  * General Interface
 ```
     const OpeningBook = ChessTools.OpeningBook.<type>
     const book = new OpeningBook();
@@ -31,13 +31,13 @@ The goal of of this package is to provide useful functionality for those seeking
         }
     });
 ```
-..* Supported Formats:
-...* CTG
-...* Polyglot
-...* Arena
+  * Supported Formats:
+   * CTG
+   * Polyglot
+   * Arena
 
-.* ECO
-..Allows for openings to be classified based on a pgn string.
+ * ECO
+  Allows for openings to be classified based on a pgn string.
 ```
     const ECO = ChessTools.ECO;
     const eco = new ECO();
@@ -53,26 +53,24 @@ The goal of of this package is to provide useful functionality for those seeking
     //alternatively eco.load(stream) for a stream of a standard pgn file of openings.
 ```
 
-
 ## References
 * Chess Programming Wiki
-.. https://chessprogramming.wikispaces.com/
+  https://chessprogramming.wikispaces.com/
 
 
 * ABK Format 
-.. https://chessprogramming.wikispaces.com/ABK
+  https://chessprogramming.wikispaces.com/ABK
 
 * Polyglot Format
-..Sample File .. https://github.com/michaeldv/donna_opening_books/raw/master/gm2001.bin
+  Sample File https://github.com/michaeldv/donna_opening_books/raw/master/gm2001.bin
 
 
 * CTG Format
-.. Forum post .. http://rybkaforum.net/cgi-bin/rybkaforum/topic_show.pl?tid=2319
+  Forum post .. http://rybkaforum.net/cgi-bin/rybkaforum/topic_show.pl?tid=2319
 
 * CTGReader
-.. https://github.com/sshivaji/ctgreader/
-.. Sample file http://americanfoot.free.fr/echecs/ctg-thematique.htm
+  https://github.com/sshivaji/ctgreader/
+  Sample file http://americanfoot.free.fr/echecs/ctg-thematique.htm
 
-
-ECO Codes
-.. ftp://ftp.cs.kent.ac.uk/pub/djb/pgn-extract/eco.pgn
+* ECO Codes
+  ftp://ftp.cs.kent.ac.uk/pub/djb/pgn-extract/eco.pgn
