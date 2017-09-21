@@ -13,11 +13,10 @@ The goal of of this package is to provide useful functionality for those seeking
 ```
 ## Organization
 
-* ChessTools
- * OpeningBooks
-   Allows for reading opening books in various formats with a generic interface.
-
-  * General Interface
+### ChessTools
+#### OpeningBooks
+Allows for reading opening books in various formats with a generic interface.
+##### General Interface
 ```
     const OpeningBook = ChessTools.OpeningBook.<type>
     const book = new OpeningBook();
@@ -31,13 +30,13 @@ The goal of of this package is to provide useful functionality for those seeking
         }
     });
 ```
-  * Supported Formats:
-   * CTG
-   * Polyglot
-   * Arena
+##### Supported Formats:
+* CTG
+* Polyglot
+* Arena
 
- * ECO
-  Allows for openings to be classified based on a pgn string.
+#### ECO
+Allows for openings to be classified based on a pgn string.
 ```
     const ECO = ChessTools.ECO;
     const eco = new ECO();
