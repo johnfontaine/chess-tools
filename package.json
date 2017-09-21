@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "chess-tools",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A collection of tools / libraries for programming chess applications.",
   "scripts": {
     "main": "index.js",
