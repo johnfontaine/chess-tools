@@ -1,4 +1,5 @@
 "use strict";
+const utils  = require('../../utils.js');
 let peices = {
     'Pawn' : 'P',
     'Knight': 'N',
@@ -6,7 +7,7 @@ let peices = {
     'Queen': 'Q',
     'Bishop': 'B'
 };
-let files = "abcdefgh".split('');
+let files = utils.board.FILES;
 function algebraic_position_to_xy(algebraic) {
     let file_and_rank = algebraic.split("");
     let x;

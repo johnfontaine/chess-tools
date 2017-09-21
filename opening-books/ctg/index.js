@@ -1,317 +1,21 @@
 "use strict";
-var debug = require('debug')('CTG')
+var debug = require('debug')('CTG');
+var utils = require(__dirname + '/../../utils.js');
+const CTGEntry = require("./entry.js");
 //Based on notes  from http://rybkaforum.net/cgi-bin/rybkaforum/topic_show.pl?tid=2319
 const Transform = require('stream').Transform;
 const EventEmitter = require('events');
-var Chess = require('chess.js').Chess;
-var chess = new Chess();
-var chess_black = new Chess();
-const peice_encoding = {
-  '0' :     { txt : ' ', type : null, color : null},
- '110' :    { txt : 'P', type : chess.PAWN, color : chess.WHITE },
- '10110' :  { txt : 'R', type : chess.ROOK, color : chess.WHITE},
- '10100' :  { txt : 'B', type : chess.BISHOP, color : chess.WHITE},
- '10010' :  { txt : 'N', type : chess.KNIGHT, color : chess.WHITE},
- '100010' : { txt : 'Q', type : chess.QUEEN, color : chess.WHITE},
- '100000' : { txt : 'K', type : chess.KING, color : chess.WHITE},
- '111' :    { txt : 'p', type : chess.PAWN, color : chess.BLACK},
- '10111' :  { txt : 'r', type : chess.ROOK, color : chess.BLACK},
- '10101' :  { txt : 'b', type : chess.BISHOP, color : chess.BLACK},
- '10011' :  { txt : 'n', type : chess.KNIGHT, color : chess.BLACK},
- '100011' : { txt : 'q', type : chess.QUEEN, color : chess.BLACK},
- '100001' : { txt : 'k', type : chess.KING, color : chess.BLACK},
-};
-const peice_encoding_black = {
-  '0' :     { txt : ' ', type : null, color : null},
-  '110' :    { txt : 'p', type : chess.PAWN, color : chess.BLACK },
-  '10110' :  { txt : 'r', type : chess.ROOK, color : chess.BLACK },
-  '10100' :  { txt : 'b', type : chess.BISHOP, color : chess.BLACK },
-  '10010' :  { txt : 'n', type : chess.KNIGHT, color : chess.BLACK },
-  '100010' : { txt : 'q', type : chess.QUEEN, color : chess.BLACK },
-  '100000' : { txt : 'k', type : chess.KING, color : chess.BLACK },
-  '111' :    { txt : 'P', type : chess.PAWN, color : chess.WHITE },
-  '10111' :  { txt : 'R', type : chess.ROOK, color : chess.WHITE },
-  '10101' :  { txt : 'B', type : chess.BISHOP, color : chess.WHITE },
-  '10011' :  { txt : 'N', type : chess.KNIGHT, color : chess.WHITE },
-  '100011' : { txt : 'Q', type : chess.QUEEN, color : chess.WHITE },
-  '100001' : { txt : 'K', type : chess.KING, color : chess.WHITE },
-}
-
-const board_index = {
-  'a1' : 0,
-  'a2' : 1,
-  'a3' : 2,
-  'a4' : 3,
-  'a5' : 4,
-  'a6' : 5,
-  'a7' : 6,
-  'a8' : 7,
-  'b1' : 8,
-  'b2' : 9,
-  'b3' : 10,
-  'b4' : 11,
-  'b5' : 12,
-  'b6' : 13,
-  'b7' : 14,
-  'b8' : 15,
-  'c1' : 16,
-  'c2' : 17,
-  'c3' : 18,
-  'c4' : 19,
-  'c5' : 20,
-  'c6' : 21,
-  'c7' : 22,
-  'c8' : 23,
-  'd1' : 24,
-  'd2' : 25,
-  'd3' : 26,
-  'd4' : 27,
-  'd5' : 28,
-  'd6' : 29,
-  'd7' : 30,
-  'd8' : 31,
-  'e1' : 32,
-  'e2' : 33,
-  'e3' : 34,
-  'e4' : 35,
-  'e5' : 36,
-  'e6' : 37,
-  'e7' : 38,
-  'e8' : 39,
-  'f1' : 40,
-  'f2' : 41,
-  'f3' : 42,
-  'f4' : 43,
-  'f5' : 44,
-  'f6' : 45,
-  'f7' : 46,
-  'f8' : 47,
-  'g1' : 48,
-  'g2' : 49,
-  'g3' : 50,
-  'g4' : 51,
-  'g5' : 52,
-  'g6' : 53,
-  'g7' : 54,
-  'g8' : 55,
-  'h1' : 56,
-  'h2' : 57,
-  'h3' : 58,
-  'h4' : 59,
-  'h5' : 60,
-  'h6' : 61,
-  'h7' : 62,
-  'h8' : 63
-};
-
-const flip_board = {
-  'a1' : 'a8',
-  'a2' : 'a7',
-  'a3' : 'a6',
-  'a4' : 'a5',
-  'a5' : 'a4',
-  'a6' : 'a3',
-  'a7' : 'a2',
-  'a8' : 'a1',
-  'b1' : 'b8',
-  'b2' : 'b7',
-  'b3' : 'b6',
-  'b4' : 'b5',
-  'b5' : 'b4',
-  'b6' : 'b3',
-  'b7' : 'b2',
-  'b8' : 'b1',
-  'c1' : 'c8',
-  'c2' : 'c7',
-  'c3' : 'c6',
-  'c4' : 'c5',
-  'c5' : 'c4',
-  'c6' : 'c3',
-  'c7' : 'c2',
-  'c8' : 'c1',
-  'd1' : 'd8',
-  'd2' : 'd7',
-  'd3' : 'd6',
-  'd4' : 'd5',
-  'd5' : 'd4',
-  'd6' : 'd3',
-  'd7' : 'd2',
-  'd8' : 'd1',
-  'e1' : 'e8',
-  'e2' : 'e7',
-  'e3' : 'e6',
-  'e4' : 'e5',
-  'e5' : 'e4',
-  'e6' : 'e3',
-  'e7' : 'e2',
-  'e8' : 'e1',
-  'f1' : 'f8',
-  'f2' : 'f7',
-  'f3' : 'f6',
-  'f4' : 'f5',
-  'f5' : 'f4',
-  'f6' : 'f3',
-  'f7' : 'f2',
-  'f8' : 'f1',
-  'g1' : 'g8',
-  'g2' : 'g7',
-  'g3' : 'g6',
-  'g4' : 'g5',
-  'g5' : 'g4',
-  'g6' : 'g3',
-  'g7' : 'g2',
-  'g8' : 'g1',
-  'h1' : 'h8',
-  'h2' : 'h7',
-  'h3' : 'h6',
-  'h4' : 'h5',
-  'h5' : 'h4',
-  'h6' : 'h3',
-  'h7' : 'h2',
-  'h8' : 'h1',
-}
-const mirror_file = {
-  'a' : 'h',
-  'b' : 'g',
-  'c' : 'f',
-  'd' : 'e',
-  'e' : 'd',
-  'f' : 'c',
-  'g' : 'b',
-  'h' : 'a'
-};
-const flip_ep_column = [
-  0x07,
-  0x06,
-  0x05,
-  0x04,
-  0x03,
-  0x02,
-  0x00
-];
-const castle_encoding = [
-  { code : 0x02, value : 'K'},
-  { code : 0x01, value : 'Q'},
-  { code : 0x8, value: 'k' },
-  { code : 0x04, value : 'q'}
-];
-const en_passant_encoding = [
-  { code : 0x00 , value : 'a6' },
-  { code : 0x01 , value : 'b6' },
-  { code : 0x02 , value : 'c6' },
-  { code : 0x03 , value : 'd6' },
-  { code : 0x04 , value : 'e6' },
-  { code : 0x05 , value : 'f6' },
-  { code : 0x06, value : 'g6' },
-  { code : 0x07 , value : 'h6' }
-];
-const en_passant_encoding_black = [
-  { code : 0x00 , value : 'a4' },
-  { code : 0x01 , value : 'b4' },
-  { code : 0x02 , value : 'c4' },
-  { code : 0x03 , value : 'd4' },
-  { code : 0x04 , value : 'e4' },
-  { code : 0x05 , value : 'f4' },
-  { code : 0x06, value : 'g4' },
-  { code : 0x07 , value : 'h4' }
-]
-
-function read_24(dataview, start) {
-  let byte1 = dataview.getUint8(start);
-  let byte2 = dataview.getUint8(start+2);
-  let byte3 = dataview.getUint8(start+4);
-  let res = (byte1 << 16) + (byte2 << 8) + byte3;
-  return res; 
-}
+const Chess = require('chess.js').Chess;
+const chess = new Chess();
+const chess_black = new Chess();
+const files = utils.board.FILES;
+const ranks = utils.board.RANKS;
+const board_index = utils.board.BOARD_INDEX;
+const flip_board = utils.board.FLIP_BOARD;
+const mirror_file = utils.board.MIRROR_FILE;
 const CTGMoveService = require("./moves.js");
 const moveService = new CTGMoveService();
-const ep_mask = parseInt('11100000', 2);
-const castle_mask = parseInt('00011110',2);
-const po = 0x1f;
-const ep = 0x20;
-const ca = 0x40;
-const files = "abcdefgh".split("");
-const ranks = "12345678".split("");
-function key_from_fen(fen) {
-  return fen.split(" ").slice(0,3).join(" ");
-}
-function pad_number_string(str, expected_length) {
-  if (str.length < expected_length) {
-    let pad = expected_length - str.length;
-    for (let x= 0; x < pad; x++) {
-      str= '0'+str;
-    } 
-  }
-  return str;
-}
-function debug_buffer_to_string(buffer) {
-  let array = new Uint8Array(buffer);
-  process.stdout.write("\nSTART_BUFFER_DUMP\n");
-  for (let i = 0; i < array.length; i++) {
-    if (i % 32 == 0) {
-      process.stdout.write("\n");
-    }
-    process.stdout.write(to_hex_string(array[i]) + " ");
-  }
-  process.stdout.write("\nEND_BUFFER_DUMP\n");
-}
-function to_hex_string(number) {
-  return "0x" + pad_number_string(number.toString(16), 2);
-}
-
-class CTGEntry {
-
-  constructor(to_move) {
-    if (!to_move) {
-      this.to_move = 'w';
-    } else {
-      this.to_move = to_move;
-    }
-    this.book_moves = [];
-    this.ratings = [];
-    this.total_games = 0;
-    this.white_wins = 0;
-    this.black_wins = 0;
-    this.draws = 0;
-    this.unknown1;
-    this.unknown2;
-    this.is_mirrored = false;
-    
-  }
-  setFen(fen) {
-    if (this.has_castling) {
-      let castle_string = "";
-      for (let encoding of castle_encoding) {
-        if (this.castling_data & encoding.code) {
-          castle_string += encoding.value;
-        }
-      }
-      fen = fen.replace("-", castle_string);
-    }
-    if (this.has_en_passant) {
-      let ep_coding = this.to_move === 'w' ? en_passant_encoding : en_passant_encoding_black;
-      for (let coding of ep_coding) {
-        if (coding.code & this.en_passant_data) {
-          let fen_items = fen.split(" ");
-          fen_items[3] = coding.value;
-          fen = fen_items.join(" ");
-        }
-      }
-    }
-    if (this.to_move === 'b') {
-      let fen_items = fen.split(" ");
-      fen_items[1] = 'b';
-      fen = fen_items.join(" ");
-    }
-    this.fen = fen;
-    this.key = key_from_fen(fen);
-  }
-  toString() {
-    return JSON.stringify(this, null, '');
-  }
-}
-
-
+const {peice_encoding, peice_encoding_black, flip_ep_column, castle_encoding,en_passant_encoding,en_passant_encoding_black,ep_mask, castle_mask, po, ep, ca } = require("./encoding.js");
 class CTGStream extends Transform {
   constructor() {
     super({readableObjectMode : true });
@@ -393,10 +97,10 @@ class CTGStream extends Transform {
     let castling = header_byte & 0x40;
     if (!header_byte) {
       // console.log("INVALID HEADER BYTE WTF!!!", this.record_start);
-      debug_buffer_to_string(page.slice(this.record_start-3, this.record_start+3));
+      utils.debug_buffer_to_string(page.slice(this.record_start-3, this.record_start+3));
       process.exit();
     }
-    // console.log(pad_number_string(header_byte.toString(2), 8));
+    // console.log(utils.pad_number_string(header_byte.toString(2), 8));
     entry.position_length = position_length;
     // console.log("POSITION LENGTH", position_length);
     entry.has_en_passant = en_passant;
@@ -410,7 +114,7 @@ class CTGStream extends Transform {
     let position_view = new Uint8Array(position_buffer);
     let binary_string = "";
     position_view.forEach((element)=>{
-      binary_string += pad_number_string(element.toString(2), 8);
+      binary_string += utils.pad_number_string(element.toString(2), 8);
     });
     entry.encoded_position = binary_string;
     entry_black.encoded_position = binary_string;
@@ -587,13 +291,24 @@ class CTG  extends EventEmitter {
     })
     stream.pipe(this.stream);
   }
-  findAll(fen) {
+  find(fen) {
     if (!this.loaded) {
       throw new Error("No book is loaded")
     }
     let to_move = fen.split(" ")[1];
-    let key = key_from_fen(fen);
+    let key = utils.key_from_fen(fen);
     return this.entries[to_move][key];
   }
 }
 module.exports=CTG;
+CTG.CTGStream = CTGStream;
+CTG.CTGEntry = CTGEntry;
+
+
+function read_24(dataview, start) {
+  let byte1 = dataview.getUint8(start);
+  let byte2 = dataview.getUint8(start+2);
+  let byte3 = dataview.getUint8(start+4);
+  let res = (byte1 << 16) + (byte2 << 8) + byte3;
+  return res; 
+}

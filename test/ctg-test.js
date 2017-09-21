@@ -25,7 +25,7 @@ describe('CTG', function() {
     describe('check move lookup', function() {
         for (let fen of test_fen) {
             it(fen + ' has data', function() {
-                let r = ctg.findAll(fen);
+                let r = ctg.find(fen);
                // console.log(JSON.stringify(r.book_moves,null, ' '));
                 assert.notEqual(typeof r, 'undefined');
             });
