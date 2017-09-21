@@ -8,9 +8,9 @@ The goal of of this package is to provide useful functionality for those seeking
 
 ## Usage
 
-```const ChessTools = require('chess-tools');
-
-
+```
+ const ChessTools = require('chess-tools');
+```
 ## Organization
 
 * ChessTools
