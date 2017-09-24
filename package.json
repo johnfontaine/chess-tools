@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "chess-tools",
   "version": "0.1.0",
   "description": "A collection of tools / libraries for programming chess applications.",
