@@ -2,9 +2,11 @@
 
 ## Purpose
 
-The goal of of this package is to provide useful functionality for those seeking to integrate various chess related datasets.  This project is not intended to perform analysis its own analysis or serve as a chess engine.  Instead it is meant as a utlity to bridge different datasources such as games played online, ECO codes, opening books, and engine analysis, and tablebases.  
+The goal of of this project is to provide useful functionality for those seeking to integrate various chess related datasets.  Currently it supports opening books in ABK,Polyglot and, CTG Format. It also provides the ability to categorize openings using a PGN formatted database.  In future releases I hope to support more data sources and formats.  
 
 ## Installation
+
+    npm install chess-tools
 
 ## Usage
 
