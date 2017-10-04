@@ -37,7 +37,24 @@ Allows for reading opening books in various formats with a generic interface.
 * Polyglot
 * Arena
 
-#### ECO
+#### Other Data Formnats
+##### EPD
+Allows for loading and parsing EPD files into individual entries organized by position.
+
+```
+    const EPD = ChessTools.EPD;
+    const epd = new EPD();
+    const fen =  '3r1rk1/1p3pnp/p3pBp1/1qPpP3/1P1P2R1/P2Q3R/6PP/6K1 w - -'
+    stream = getFileOrBytesStreamSomehow();
+    epd.load_stream(stream);
+    epd.on("loaded"=>{ 
+      let epdEntry = epd.find(fen);
+      console.log("Best move is", epd.best_move);
+      console.log("Comments are", epd.comments);
+      //see epd/entry.js for more details.
+    });
+```
+##### ECO
 Allows for openings to be classified based on a pgn string.
 ```
     const ECO = ChessTools.ECO;
@@ -53,6 +70,9 @@ Allows for openings to be classified based on a pgn string.
     eco.load_default(); //loads a default opening database (see sources below)
     //alternatively eco.load(stream) for a stream of a standard pgn file of openings.
 ```
+
+
+
 ## Future Plans / Roadmap
 
 Eventually I want to expand to support various tablebase and game databases. I also want to simplify the interface to send these datasets to chess engines via UCI.  

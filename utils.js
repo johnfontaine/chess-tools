@@ -1,6 +1,6 @@
 "use strict";
 module.exports.key_from_fen = function (fen) {
-    return fen.split(" ").slice(0,3).join(" ");
+    return fen.split(" ").slice(0,4).join(" ");
 }
 module.exports.pad_number_string = function(str, expected_length) {
     if (str.length < expected_length) {
