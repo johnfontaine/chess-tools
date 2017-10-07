@@ -1,13 +1,13 @@
 "use strict";
-const Engines = require("../engines/index.js");
-const XboardEngineManager = Engines.XboardEngineManager;
-const LocalProcessEngine = Engines.Engine.LocalProcessEngine;
+//const Engines = require("../engines/index.js");
+const ChessTools = require("../index.js");
 //let engine_path = process.cwd() + "/bin/crafty-25.2"
-//let engine_path = '/usr/local/Cellar/gnu-chess/6.2.5/bin/gnuchess';
-let engine_path = 'java';
-let engine_args = ["-jar", process.cwd() + '/bin/Frittle-1.0.jar' ];
-const engine = new LocalProcessEngine(engine_path, engine_args);
-const engineManager = new XboardEngineManager(engine, {});
+let engine_path = '/usr/local/Cellar/gnu-chess/6.2.5/bin/gnuchess';
+//let engine_path = 'java';
+//let engine_args = ["-jar", process.cwd() + '/bin/Frittle-1.0.jar' ];
+let engine_args = ['--uci'];
+const conn = new ChessTools.Engines.Connection.LocalProcess(engine_path, engine_args);
+const engineManager = new ChessTools.Engines.Manager.UCI(conn, {});
 engineManager.on("initialized", async ()=>{ 
 let bestmove = await engineManager.ponderPosition(
     //"rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0",

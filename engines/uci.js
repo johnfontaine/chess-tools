@@ -51,6 +51,7 @@ class UCIEngineManager extends AbstractEngineManager {
         };
         this.on("initialized", this.onInitialized.bind(this));
         this.on("readyok", this.onReadyOK.bind(this));
+        this._sendMessage(" ");
         this._sendMessage("uci");
 
     }

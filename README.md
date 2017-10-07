@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The goal of of this project is to provide useful functionality for those seeking to integrate various chess related datasets.  Currently it supports opening books in ABK,Polyglot and, CTG Format. It also provides the ability to categorize openings using a PGN formatted database.  In future releases I hope to support more data sources and formats.  
+The goal of of this project is to provide useful functionality for those seeking to integrate chess  datasets (ABK, Polyglot, CTG, ECO, EPD) and engine protocols (Winboard/Xboard, UCI).  This library isn't an engine, or a chess database; but instead is designed to help people who want to integrate engines and databases in order to perform more detailed analysis.  For example one could take an existing game, classify the opening by ECO code, and then send the game for analysis against various engines (e.g. Komodo, Stockfish, etc) and opening book databases.  
 
 ## Installation
 
@@ -12,14 +12,21 @@ The goal of of this project is to provide useful functionality for those seeking
 
 ```
  const ChessTools = require('chess-tools');
+ //See the examples/ folder in this package.
 ```
 ## Organization
 
 ### ChessTools
+
+All the submodules are under the ChessTools namespace.   
+
+
 #### OpeningBooks
 Allows for reading opening books in various formats with a generic interface.
+
 ##### General Interface
 ```
+    const ChessTools = require('chess-tools');
     const OpeningBook = ChessTools.OpeningBook.<type>
     const book = new OpeningBook();
     const fen = "rnbqkbnr/pppp1ppp/8/4p3/8/8/PPPPPPPP/RNBQKBNR w KQkq";
@@ -33,15 +40,16 @@ Allows for reading opening books in various formats with a generic interface.
     });
 ```
 ##### Supported Formats:
-* CTG
-* Polyglot
-* Arena
+* CTG -- used by products such as Chessbase
+* Polyglot -- used by a number of open source projects
+* ABK -- used by products such as Arena 
 
 #### Other Data Formnats
 ##### EPD
 Allows for loading and parsing EPD files into individual entries organized by position.
 
 ```
+    const ChessTools = require('chess-tools');
     const EPD = ChessTools.EPD;
     const epd = new EPD();
     const fen =  '3r1rk1/1p3pnp/p3pBp1/1qPpP3/1P1P2R1/P2Q3R/6PP/6K1 w - -'
@@ -71,7 +79,33 @@ Allows for openings to be classified based on a pgn string.
     //alternatively eco.load(stream) for a stream of a standard pgn file of openings.
 ```
 
+#### Chess Engine Integration
 
+Simplify communications with chess engines using either the XBoard/Winboard protocol or UCI.   Default support is provided for running engines and communicating over stdin/stdout; but an abstact interface is defined below that can be extened to support other forms of interprocess/interserver communications (e.g. Sockets)
+
+##### Engines
+
+An abstract interface to chess engines.  Provides an Abstract Manager class with a generic API interface and a Connetion class that handles the low level communications.  Two concrete Manager classes are available:
+* ChessTools.Engines.Manager.Xboard -- provides support for the Xboard/Winboard protocol
+* ChessTools.Engines.Manager.UCI -- provides support for the UCI protocol (recommended if available from your engine of choice).
+
+A generic async ponderPosition(fen, options) interface is provided.  See xboard.js and uci.js for protocol specifc features.  
+
+```
+    const ChessTools = require('chess-tools');
+    const enginePath = "/path/to/engine/executable" //e.g. /usr/local/bin/gnuchess
+    const engineArgs = [] //additional args e.g. "--uci"
+    const conn = new ChessTools.Engines.Connection.LocalProcess(engine_path, engine_args);
+    const engineManager = new ChessTools.Engines.Manager.UCI(conn, {ponderTimeout : 30000 });
+    /* ponderTimeout is the amount of time in milliseconds the engine should contemplate before we force it to move (30 seconds (30000) default) */
+    engineManager.on("initialized", async ()=>{ 
+      let bestmove = await engineManager.ponderPosition(
+      "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2", 
+      {lines : 5} ); //number of lines to consider at the same time.
+      console.log("BESTMOVE ", bestmove);
+      engine.quit(); //closes teh engine and teh 
+    });
+```
 
 ## Future Plans / Roadmap
 

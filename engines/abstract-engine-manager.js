@@ -35,7 +35,7 @@ class AbstractEngineManager extends EventEmitter {
        
     }
 }
-class AbstractEngine extends EventEmitter {
+class AbstractConnection extends EventEmitter {
     constructor() {
         super();
 
@@ -47,7 +47,7 @@ class AbstractEngine extends EventEmitter {
         throw new Error("Must implement local version");
     }
 }
-class LocalProcessEngine extends AbstractEngine {
+class LocalProcess extends AbstractConnection {
     constructor(executable, args) {
         super();
         debug("cmd: " + executable + " " + args);
@@ -88,9 +88,9 @@ class LocalProcessEngine extends AbstractEngine {
     }
 }
 module.exports = {
-    AbstractEngine : AbstractEngine,
+    AbstractConnection : AbstractConnection,
     AbstractEngineManager : AbstractEngineManager,
-    LocalProcessEngine : LocalProcessEngine
+    LocalProcess : LocalProcess
 }
 
 
