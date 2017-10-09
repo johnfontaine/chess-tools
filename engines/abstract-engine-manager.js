@@ -1,7 +1,7 @@
 "use strict";
 const EventEmitter = require("events");
 const debug = require("debug")("EngineManager");
-const child_process = require("child_process");
+
 class AbstractEngineManager extends EventEmitter {
     constructor(engine, options) {
         super();
@@ -17,6 +17,7 @@ class AbstractEngineManager extends EventEmitter {
                 console.log("error", error);
             }
         }
+        console.log("SUPER FINISH", this.engine.onmessage);    
     }
     async ponderPosition(fen, options) {
         throw new Error("Not implemented");
@@ -35,62 +36,6 @@ class AbstractEngineManager extends EventEmitter {
        
     }
 }
-class AbstractConnection extends EventEmitter {
-    constructor() {
-        super();
 
-    }
-    postMessage(message) {
-        throw new Error("Must implement in subclass");
-    }
-    onmessage(message) {
-        throw new Error("Must implement local version");
-    }
-}
-class LocalProcess extends AbstractConnection {
-    constructor(executable, args) {
-        super();
-        debug("cmd: " + executable + " " + args);
-        this.message_buffer;
-        if (args) {
-            this.engine = child_process.spawn(executable, args);
-        } else {
-            this.engine = child_process.spawn(executable);
-        }
-        this.engine.stderr.on('data', (error)=>{ 
-            this.emit("error", error);
-        });
-        this.engine.stdout.on("data", (data)=>{
-            let data_str = data.toString();
-            if (this.message_buffer) {
-               data_str = this.message_buffer + data_str;
-            }
-            let messages = data_str.split("\n");
-            if (messages[messages.length-1] !== '') {
-                this.message_buffer = messages.pop();
-            }
-            for (let message of messages) {
-                if (message) {
-                    this.onmessage(message);
-                }
-            }
-            
-        });
-        this.engine.on("close", (code)=>{
-          this.emit("close", code);
-        });
-    }
-    postMessage(message) {
-        if (!message.endsWith("\n")) {
-            message += "\n";
-        }
-        this.engine.stdin.write(message);
-    }
-}
-module.exports = {
-    AbstractConnection : AbstractConnection,
-    AbstractEngineManager : AbstractEngineManager,
-    LocalProcess : LocalProcess
-}
-
+module.exports = AbstractEngineManager;
 

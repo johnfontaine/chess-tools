@@ -1,6 +1,6 @@
 "use strict";
 const debug = require("debug")("UCI");
-const { AbstractEngineManager, LocalProcessEngine } = require("./abstract-engine-manager.js");
+const AbstractEngineManager = require("./abstract-engine-manager.js");
 //UCI Protocol
 //http://wbec-ridderkerk.nl/html/UCIProtocol.html
 const EventEmitter = require('events');
@@ -92,7 +92,6 @@ class UCIEngineManager extends AbstractEngineManager {
         return new Promise(
             (resolve, reject) =>{ 
                 let ponder_options = make_ponder_options_string(options, this.options.ponder_timeout);
-                console.log("PONDER OPTIONS", ponder_options)
                 this._clear_stats();
 
                 let messages = [
@@ -319,7 +318,6 @@ function make_ponder_options_string(options, max_movetime) {
     } else {
         options_options.push("movetime " + max_movetime);
     }
-    console.log("options_options", options_options);
     return options_options.join(" ");
 }
 

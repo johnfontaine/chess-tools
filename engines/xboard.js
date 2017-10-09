@@ -1,6 +1,6 @@
 "use strict";
 const debug = require("debug")("XBoard");
-const { AbstractEngineManager } = require("./abstract-engine-manager.js");
+const AbstractEngineManager = require("./abstract-engine-manager.js");
 //See https://www.gnu.org/software/xboard/engine-intf.html
 
 class XBoardEngineManager extends AbstractEngineManager {

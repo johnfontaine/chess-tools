@@ -1,8 +1,8 @@
 "use strict";
 const UCI = require("./uci.js");
 const Xboard = require("./xboard.js");
-const {LocalProcess, AbstractConenction, AbstractEngineManager } = require("./abstract-engine-manager.js");
-
+const AbstractEngineManager = require("./abstract-engine-manager.js");
+const { AbstractConnection, LocalProcess } = require("./connection.js");
 module.exports = {
     Manager : {
         AbstractEngineManager : AbstractEngineManager,
@@ -11,6 +11,6 @@ module.exports = {
     },
     Connection : {
         LocalProcess : LocalProcess,
-        AbstractConenction : AbstractConenction
+        AbstractConnection : AbstractConnection
     }
 };

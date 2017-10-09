@@ -96,7 +96,7 @@ A generic async ponderPosition(fen, options) interface is provided.  See xboard.
     const enginePath = "/path/to/engine/executable" //e.g. /usr/local/bin/gnuchess
     const engineArgs = [] //additional args e.g. "--uci"
     const conn = new ChessTools.Engines.Connection.LocalProcess(engine_path, engine_args);
-    const engineManager = new ChessTools.Engines.Manager.UCI(conn, {ponderTimeout : 30000 });
+    const engineManager = new ChessTools.Engines.Manager.UCI(conn, {ponder_timeout : 30000 });
     /* ponderTimeout is the amount of time in milliseconds the engine should contemplate before we force it to move (30 seconds (30000) default) */
     engineManager.on("initialized", async ()=>{ 
       let bestmove = await engineManager.ponderPosition(
