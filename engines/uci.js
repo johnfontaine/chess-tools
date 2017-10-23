@@ -169,17 +169,7 @@ class UCIEngineManager extends AbstractEngineManager {
             this.is_calculating = false;
             this.current_position.best_move = match[1];
             let move_lines = this.getLinesForMove(this.current_position.best_move);
-            if (move_lines.length > 0) {
-                this.send_best_move();
-            } else {
-                this._sendMessage("info");
-                console.log("no line found");
-                setTimeout(()=>{ 
-                    this.send_best_move();
-                }, 1000);
-               
-            }
-
+            this.send_best_move();
         } else if (message.startsWith("readyok")) {
             this.emit("isready");
             return;

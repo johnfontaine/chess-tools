@@ -14,6 +14,7 @@ The goal of of this project is to provide useful functionality for those seeking
  const ChessTools = require('chess-tools');
  //See the examples/ folder in this package.
 ```
+
 ## Organization
 
 ### ChessTools
