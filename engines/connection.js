@@ -13,6 +13,9 @@ class AbstractConnection extends EventEmitter {
     onmessage(message) {
         throw new Error("Must implement local version on message");
     }
+    quit() {
+
+    }
 }
 class LocalProcess extends AbstractConnection {
     constructor(executable, args) {
@@ -52,6 +55,11 @@ class LocalProcess extends AbstractConnection {
             message += "\n";
         }
         this.engine.stdin.write(message);
+    }
+    quit() {
+        if (this.engine && !this.engine.killed) {
+            this.engine.kill();
+        }
     }
 }
 module.exports = {

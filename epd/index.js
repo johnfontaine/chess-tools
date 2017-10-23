@@ -15,11 +15,9 @@ class EPDStream extends Transform {
         let data = chunk.toString();
         let lines = data.split(/\n/m);
         if (this._lines.length > 0) {
-          console.log("append to last line");
           this._lines[this.lines.length - 1] += lines.shift();
         }
         for (let line of lines) {
-            console.log("line", line);
           this._lines.push(line);
         }
         this._make_records_from_lines();
@@ -30,7 +28,6 @@ class EPDStream extends Transform {
         for (let i = 0; i < len; i++) {
          
           let line = this._lines.shift();
-          console.log("line", i, line);
           if (line) {
             let entry = EPDEntry.fromLine(line);
             this.push(entry);

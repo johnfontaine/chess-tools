@@ -109,7 +109,7 @@ A generic async ponderPosition(fen, options) interface is provided.  See xboard.
 
 ## Future Plans / Roadmap
 
-Eventually I want to expand to support various tablebase and game databases. I also want to simplify the interface to send these datasets to chess engines via UCI.  
+Eventually I want to expand to support various tablebase and game databases.  
 
 ## References
 Note: Sample Files are believed to be in the public domain or licensed under GPL.  Sources are provided below.
@@ -134,3 +134,9 @@ Note: Sample Files are believed to be in the public domain or licensed under GPL
 
 * ECO Codes
   ftp://ftp.cs.kent.ac.uk/pub/djb/pgn-extract/eco.pgn
+
+* Winboard/ XBoard Protocol
+  https://www.gnu.org/software/xboard/engine-intf.html  
+
+* UCI 
+  https://chessprogramming.wikispaces.com/UCI

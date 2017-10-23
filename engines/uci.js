@@ -53,9 +53,11 @@ class UCIEngineManager extends AbstractEngineManager {
         this.on("readyok", this.onReadyOK.bind(this));
         this._sendMessage(" ");
         this._sendMessage("uci");
+        this._sendMessage("debug on");
 
     }
     _clear_stats() {
+        this.handling_best_move = false;
         this.current_stats = {
             depth : 0,
             time : 0,
@@ -100,6 +102,10 @@ class UCIEngineManager extends AbstractEngineManager {
                 if (this.engine_info.options["Clear Hash"]) {
                     messages.push(this.engine_info.options["Clear Hash"].generateMesssage());
                 }
+                if (this.engine_info.options.UCI_ShowCurrLine) {
+                    this.engine_info.options.UCI_ShowCurrLine.value = false;
+                    messages.push(this.engine_info.options.UCI_ShowCurrLine.generateMesssage())
+                }
                 if (this.engine_info.options.UCI_AnalyseMode) {
                     this.engine_info.options.UCI_AnalyseMode.value = true;
                     messages.push(this.engine_info.options.UCI_AnalyseMode.generateMesssage())
@@ -134,34 +140,55 @@ class UCIEngineManager extends AbstractEngineManager {
         this._sendMessage("stop");
     }
     quit() {
-
+        this._sendMessage("quit");
+        this.engine.quit();
     }
     clearInfo() {
         this.info = [];
     }
     handleMessage(message) {
-        debug("RECV:" + message);
+        debug("RECV-" + this.name + ":" + message);
         if (typeof message !== 'string') {
             this.emit("unknown_message", message);
             return;
         }
         if (message.startsWith("info")) {
             this._handleInfo(message);
-        } else if (message.startsWith("bestmove")) {
+        } else if (message.startsWith("bestmove") && !this.handling_best_move) {
+            this.handling_best_move = true;
+
             //this.state.is_calculating = false;
+            this.info.push({
+                raw: message
+            });
+
             if (this.ponderaction) {
                 clearTimeout(this.ponderaction);
             }
             let match = message.match(/bestmove (\w+)/);
             this.is_calculating = false;
             this.current_position.best_move = match[1];
-            return this.current_position.resolve(match[1]);
+            let move_lines = this.getLinesForMove(this.current_position.best_move);
+            if (move_lines.length > 0) {
+                this.send_best_move();
+            } else {
+                this._sendMessage("info");
+                console.log("no line found");
+                setTimeout(()=>{ 
+                    this.send_best_move();
+                }, 1000);
+               
+            }
+
         } else if (message.startsWith("readyok")) {
             this.emit("isready");
             return;
         } else {
             this._handleInitMessages(message);
         }
+    }
+    send_best_move() {
+        return this.current_position.resolve(this.current_position.best_move);
     }
     _handleInfo(message) {
         let info = {
@@ -178,6 +205,13 @@ class UCIEngineManager extends AbstractEngineManager {
                  score: info.data.score 
                 };
             this.emit("line", (line, this.current_stats.lines[line]))
+        } else if (info.data.pv && this.current_stats.lines.length < 2) {
+            
+            this.current_stats.lines[0] = {
+                pv:  info.data.pv, 
+                score: info.data.score 
+               };
+            this.emit("line", (0, this.current_stats.lines[0]))
         }
         for (let key of Object.keys(info.data)) {
             if (key === 'multpv' || key === 'pv' || key === 'score') {
@@ -185,6 +219,7 @@ class UCIEngineManager extends AbstractEngineManager {
             }      
             this.current_stats[key] = info.data[key];
         }
+        //console.log("info-" + this.name, info);
         this.emit("info", info);
     }
     _handleInitMessages(message) {
@@ -219,7 +254,19 @@ class UCIEngineManager extends AbstractEngineManager {
             }
         }
     }
-
+    getLinesForMove(move) {
+        let l = [];
+        for (let line of this.current_stats.lines) {
+            if (line && line.pv) {
+                //console.log("line.pv", line.pv);
+                let match = line.pv.startsWith(move);
+                if (match) {
+                    l.push(line);
+                }
+            }
+        }
+        return l;
+    }
 }
 
 module.exports = UCIEngineManager;

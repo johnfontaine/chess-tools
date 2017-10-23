@@ -16,7 +16,14 @@
     "opening book",
     "pgn",
     "chess openings",
-    "fen"
+    "fen",
+    "epd",
+    "eco",
+    "abk",
+    "uci",
+    "xboard",
+    "winboard",
+    "chessbase"
   ],
   "author": [
     {

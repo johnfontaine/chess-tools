@@ -1,5 +1,5 @@
 "use strict";
-let Chess = require("chess.js");
+const Chess = require('chess.js').Chess
 
 /*
 See https://chessprogramming.wikispaces.com/Extended+Position+Description
@@ -13,7 +13,11 @@ function getMoves(value) {
     for (let v of vs) {
         if (v) {
             if (v === 'O-O-O' || v === 'O-O' || v.match(/[abcdefghrbknqpx1-8]+[\+\?!]*/i)) {
-              moves.push(v);
+              if (v.match(/[^RBKNQPabcdefghrbknqpx1-8\+\?!]/)) {
+                //this is not a move skip it.
+              } else {
+                moves.push(v);
+              }
             } else {
                 console.log("Unknown value for move", v);
             }
@@ -21,6 +25,7 @@ function getMoves(value) {
     }
     return moves;
 }
+
 function getText(value) {
     let output = value.trim();
     output = output.replace(/"/g, "");
@@ -71,7 +76,7 @@ class EPDEntry {
         let elements = line.split(";");
         let fen_elements = elements[0].split(" ");
         let fen = fen_elements.slice(0,4).join(" ");
-        position.fen = fen;
+        position.fen = fen + " 0 1";
         elements[0] = fen_elements.slice(4).join(" ");
         for (let element of elements) {
             let em = element.trim().match(/(\w+)\s+(.+)/);
@@ -99,7 +104,12 @@ class EPDEntry {
         this.comments = [];
     }
     toChess() {
-        let chess = new Chess(this.fen);
+        let chess = new Chess();
+        if (!chess.load(this.fen)) {
+            console.log("unable to load fen", this.fen);
+            process.exit();
+        }   
+        console.log(chess.fen())
         return chess;
     }
     get best_move() {

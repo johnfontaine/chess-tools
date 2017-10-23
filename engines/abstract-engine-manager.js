@@ -5,8 +5,9 @@ const debug = require("debug")("EngineManager");
 class AbstractEngineManager extends EventEmitter {
     constructor(engine, options) {
         super();
+        this.name = "";
         this.heartbeat = setInterval(()=> {
-            debug("HEARTBEAT");
+            debug("HEARTBEAT-" + this.name  );
          }, 60000);
          this.engine = engine;
          this.engine.onmessage = (message) => {
@@ -16,13 +17,16 @@ class AbstractEngineManager extends EventEmitter {
                 this.emit("error", error);
                 console.log("error", error);
             }
-        }
-        console.log("SUPER FINISH", this.engine.onmessage);    
+        } 
+        if (options && options.name) {
+            this.name = options.name;
+        } 
     }
     async ponderPosition(fen, options) {
         throw new Error("Not implemented");
     }
     quit() {
+        this.engine.quit();
         clearInterval(this.heartbeat);
     }
     handleMessage(message) {
@@ -30,10 +34,13 @@ class AbstractEngineManager extends EventEmitter {
     }
     _sendMessage(message) {
         setTimeout(()=>{ 
-            debug("SEND: " + message);
+            debug("SEND-" + this.name + ":" + message);
             this.engine.postMessage(message + "\n");
         }, 100);
        
+    }
+    getLinesForMove(move) {
+        throw new Error("Not implemented");
     }
 }
 
