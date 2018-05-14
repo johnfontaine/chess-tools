@@ -5,7 +5,7 @@ const Chess = require('chess.js').Chess;
 const Transform = require('stream').Transform;
 const utils = require("../../utils.js");
 const files = utils.board.FILES;
-const { peiceTypes, Random64,  RandomPiece,RandomCastle, RandomEnPassant,RandomTurn,PromotionPieces,encode_move, decode_move} = require("./encoding.js")
+const { pieceTypes, Random64,  RandomPiece,RandomCastle, RandomEnPassant,RandomTurn,PromotionPieces,encode_move, decode_move} = require("./encoding.js")
 const PolyglotEntry = require("./entry.js");
 class PolyglotStream extends Transform {
   constructor() {
