@@ -2,6 +2,7 @@
 const utils = require("../../utils.js");
 const Uint64BE = require("int64-buffer").Uint64BE;
 
+const promotionPieces = " nbrq".split("");
 const files = utils.board.FILES;
 module.exports.pieceTypes = {
     bp: 0,
@@ -221,7 +222,7 @@ module.exports.RandomPiece = Random64.slice(0,768);
 module.exports.RandomCastle = Random64.slice(768, 768+4);
 module.exports.RandomEnPassant = Random64.slice(764, 764+4);
 module.exports.RandomTurn = Random64.slice(780, 780+1);
-module.exports.PromotionPieces = " nbrq".split("");
+module.exports.PromotionPieces = promotionPieces;
 module.exports.encode_move = function (algebraic_move) {
 
 }
@@ -259,7 +260,7 @@ module.exports.decode_move = function (move) {
   }
   moveStr[3] = toRow || '1';
   if (promotion) {
-      moveStr[4] = PromotionPieces[promotion];
+      moveStr[4] = promotionPieces[promotion];
   }
   let decoded = moveStr.join("");
 //Convert the castling moves to standard notation
