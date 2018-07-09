@@ -1,7 +1,65 @@
 "use strict";
+const jsscompress = require("js-string-compression");
+const hm = new jsscompress.Hauffman();
+
+/*
+  FEN is <RANK>/(x8)<SPACE><TO_MOVE><SPACE><CASTLING><SPACE><ENPASS><SPACE><HALFMOVE_CLOCK><SPACE><MOVE_NUMBER>(with each rank A-H with a peice. or skips.)
+*/
 module.exports.key_from_fen = function (fen) {
-    return fen.split(" ").slice(0,4).join(" ");
+    return fen.split(" ").slice(0,4).join(" "); //strip move number and halfmove from it.
 }
+
+module.exports.compress_fen = function(fen) {
+  return hm.compress(fen);
+}
+module.exports.uncompress_fen = function(compressed_fen) {
+  return hm.decompress(compressed_fen);
+}
+const FEN_ITEMS = ["ranks", "to_move", "castling", "en_pass"];
+module.exports.flip_board = function (fen) {
+  let data = {};
+  fen.split(" ").slice(0, 4).map((value, index) => { 
+    data[FEN_ITEMS[index]] = value;
+  });
+  if (data.to_move === 'w') {
+    data.to_move = 'b';
+  } else {
+    data.to_move = 'w';
+  }
+  let ranks = [];
+  let x = 7;
+  for (let rank of data.ranks.split("/")) {
+    let row = "";
+    for (let item of rank.split("")) {
+      if (module.exports.board.MIRROR_PEICE[item]) {       
+        row = row + module.exports.board.MIRROR_PEICE[item];
+      } else {
+        row = row + String(item);
+      }
+    }
+    ranks[x] = row;
+    x--;
+  }
+  data.ranks = ranks.join("/");
+  let en_pass = "-"
+  if (data.en_pass !== '-') {
+    if (data.en_pass.includes("3")) {
+      en_pass = data.en_pass.replace("3", "6")
+    } else {
+      en_pass = data.en_pass.replace("6", "3")
+    }
+  }
+  data.en_pass = en_pass;
+  let castling = "-"
+  if (data.castling !== '-') {
+    castling = module.exports.board.MIRROR_CASTLING[data.castling];
+  }
+  data.castling = castling;
+  return data.ranks + " " + data.to_move + " "+  data.castling + " " + data.en_pass;
+}
+
+
+
 module.exports.pad_number_string = function(str, expected_length) {
     if (str.length < expected_length) {
       let pad = expected_length - str.length;
@@ -171,3 +229,31 @@ module.exports.board.MIRROR_FILE = {
   'g' : 'b',
   'h' : 'a'
 };
+module.exports.board.MIRROR_PEICE = {
+  'P' : 'p',
+  'N' : 'n',
+  'B' : 'b',
+  'R' : 'r',
+  'Q' : 'q',
+  'K' : 'k',
+  'p' : 'P',
+  'n' : 'N',
+  'b' : 'B',
+  'r' : 'R',
+  'q' : 'Q',
+  'k' : 'K'
+  
+}
+module.exports.board.MIRROR_CASTLING = {
+  'K' : 'k',
+  "KQ" : 'kq',
+  "KQk" : 'Kkq',
+  'KQkq' : 'KQkq',
+  'Q' : 'q',
+  'Qq' : 'Qq',
+  'Qk' : 'Kq',
+  'Qkq' : 'KQq',
+  'k' : 'K',
+  'kq' : 'KQ',
+  'q' : 'Q'
+}

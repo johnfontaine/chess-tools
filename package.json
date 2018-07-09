@@ -43,6 +43,10 @@
   "dependencies": {
     "chess.js": "^0.10.2",
     "debug": "^3.0.1",
-    "int64-buffer": "^0.1.9"
+    "int64-buffer": "^0.1.9",
+    "js-string-compression": "^1.0.1",
+    "lichess-api": "^1.0.2",
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2"
   }
 }
