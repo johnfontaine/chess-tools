@@ -8,8 +8,10 @@ const FIELDS = {
     eval_key: "", //hash based on fen with move number stripped and flipped to white.
     evalutation : 0, //centipawns
     eval_delta : 0, //change from previous evaluation
-    time_taken : 0,
+    time_taken : -1,
     eval_delta : 0,
+    is_evalutated : false,
+    clock : -1,
     notes : ""
 };
 
@@ -24,3 +26,4 @@ class Ply extends BaseModel {
     }
 
 }
+module.exports=Ply

@@ -1,5 +1,6 @@
 const EventEmitter = require('events');
 const debug = require("debug")("Site");
+const stream = require('stream');
 class Job extends EventEmitter {
     constructor(promise) {
         super();
@@ -52,6 +53,17 @@ class JobQueue extends EventEmitter {
 
     }
 }
+class SiteReadable extends stream.Readable {
+    constructor(source) {
+        super({objectMode : true });
+        this._source = source;
+        this._source.on("data",(results)=>{ this.push(results)});
+        this._source.on("end", ()=> { this.push(null)});
+    }
+    _read(size) {
+        this._source.execute();
+    }
+}
 
 
 class Site extends EventEmitter {
@@ -68,11 +80,15 @@ class Site extends EventEmitter {
         return result;
     }
     async fetch_player(username) {
+        if (!(typeof this._create_fetch_player_promise) == 'function') {
+            throw new Error("Not Implemented");
+        }
         return await this._queue_fetch_promise(
             this._create_fetch_player_promise(username)
         );
     }
-    async fetch_games_for_player(player) {
+    //Returns Readable Stream
+    fetch_games_for_player(player) {
         throw new Error("Not Implemented");
     }
     async fetch_game_by_id(game_id) {
@@ -85,4 +101,5 @@ class Site extends EventEmitter {
         throw new Error("Not Implemented");
     }
 }
+Site.Readable = SiteReadable;
 module.exports=Site;
