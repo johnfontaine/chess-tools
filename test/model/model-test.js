@@ -1,5 +1,5 @@
 "use strict";
-const Models = require("../model/index.js");
+const Models = require("../../model/index.js");
 const fs = require("fs");
 const assert = require('assert');
 describe('Model', function() {

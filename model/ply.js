@@ -21,7 +21,7 @@ class Ply extends BaseModel {
     constructor(data) {
         super(data);
     }
-    get fields() {
+    get _fields() {
         return FIELDS;
     }
 

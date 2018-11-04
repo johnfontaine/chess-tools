@@ -57,7 +57,7 @@ function make_ply(chess, ply_number, move, pgn) {
         if (ply_number > 1) {
             ply.time_taken = Number(pgn.pgnply[ply_number-2].clk); - ply.clock 
         } else {
-            
+            ply.time_taken = pgn.TimeControl; - ply.clock 
         }
     }
     return ply;
@@ -177,6 +177,9 @@ class ChessCom extends Site {
         return await this._queue_fetch_promise(
             rp(options)
         );
+    }
+    async fetch_game_by_id(game_id) {
+        
     }
 }
 module.exports=ChessCom
